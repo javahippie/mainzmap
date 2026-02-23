@@ -51,19 +51,21 @@ order by stop_name, minutes_to_hbf;""").fetchall()
 
     last_stop_name = ''
     current_stop = {}
-    current_fastest = 99
+    current_fastest = 990
     stops_with_routes = []
+
     for stop in stops:
-        if last_stop_name != stop[1]:
+        if last_stop_name != stop[0]:
             current_stop['fastest_connection'] = current_fastest
             stops_with_routes.append(current_stop)
+            stops_with_routes.append(current_stop)
             current_fastest = 99
-            last_stop_name = stop[1]
+            last_stop_name = stop[0]
             current_stop = {'stop_name': stop[0],
                             'stop_lat': stop[4],
                             'stop_lon': stop[5],
                             'routes': []}
-        route = {'stop_name': stop[1],
+        route = {'stop_name': stop[0],
                  'minutes_to_hbf': stop[1],
                  'first_trip': stop[2],
                  'last_trip': stop[3],
@@ -71,6 +73,10 @@ order by stop_name, minutes_to_hbf;""").fetchall()
         if current_fastest > route['minutes_to_hbf']:
             current_fastest = route['minutes_to_hbf']
         current_stop['routes'].append(route)
+
+    if current_stop is not None:
+        current_stop['fastest_connection'] = current_fastest
+        stops_with_routes.append(current_stop)
 
     return stops_with_routes
 
