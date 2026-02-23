@@ -37,16 +37,18 @@ function refreshMap(stop) {
     }).addTo(markers);
 
     marker.bindPopup(
-        stop_name +
-        `<table>`+
-          `<tr>` +
-            `<th>Linie</th>` +
-            `<th>Dauer zum Ziel</th>` +
-            `<th>Erste Fahrt</th>` +
-            `<th>Letzte Fahrt</th>` +
-          `</tr>` +
-           stop.routes.map(stopToLi).join(' ') +
-        `</table>`
+        `<div class="route-popup">` +
+            `<h2>${stop_name}</h2>` +
+            `<table class="route-table">`+
+              `<tr>` +
+                `<th>Linie</th>` +
+                `<th>Dauer zum Ziel</th>` +
+                `<th>Erste Fahrt</th>` +
+                `<th>Letzte Fahrt</th>` +
+              `</tr>` +
+               stop.routes.map(stopToLi).join(' ') +
+            `</table>` +
+        `</div>`, {maxWidth: '600px'}
     );
 }
 

@@ -1,3 +1,7 @@
+body {
+    font-family: sans-serif;
+}
+
 div#map {
   position: absolute;
   top: 60px;
@@ -10,5 +14,34 @@ div.stop {
     min-width: 30px;
     min-height: 20px;
     border-radius: 10px;
-    background-color: red;
+}
+
+
+table.route-table {
+    border-collapse: collapse;
+    margin: 25px 0;
+    font-size: 0.9em;
+    min-width: 400px;
+}
+
+table.route-table thead tr {
+    color: #ffffff;
+    text-align: left;
+}
+
+table.route-table th,
+table.route-table td {
+    padding: 4px 4px;
+}
+
+table.route-table tbody tr {
+    border-bottom: 1px solid #dddddd;
+}
+
+table.route-table tbody tr:nth-of-type(even) {
+    background-color: #f3f3f3;
+}
+
+table.route-table tbody tr:last-of-type {
+    border-bottom: 2px solid #009879;
 }
