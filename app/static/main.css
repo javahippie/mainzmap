@@ -1,0 +1,14 @@
+div#map {
+  position: absolute;
+  top: 60px;
+  bottom: 0;
+  width: 99%;
+}
+
+div.stop {
+    text-align: center;
+    min-width: 30px;
+    min-height: 20px;
+    border-radius: 10px;
+    background-color: red;
+}
