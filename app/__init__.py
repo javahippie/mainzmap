@@ -23,6 +23,7 @@ def retrieve_stops():
      time_to_hbf as (select stops.stop_id as stop_id,
                             stops.stop_name as stop_name,
                             gtfs_to_seconds(hbf_times.departure_time) - gtfs_to_seconds(stop_times.departure_time) as hbf_diff,
+                            gtfs_to_seconds(hbf_times.departure_time) as departure_time,
                             stops.stop_lat,
                             stops.stop_lon,
                             routes.route_short_name
@@ -34,18 +35,19 @@ def retrieve_stops():
                                    on hbf_times.trip_id = stop_times.trip_id
                                        and hbf_times.stop_id in (select * from hbf_ids)
                                        and hbf_times.stop_sequence > stop_times.stop_sequence),
-    routes_with_duration as (select stop_id,
-                                    stop_name,
+    routes_with_duration as (select stop_name,
                                     min(hbf_diff) / 60 as minutes_to_hbf,
-                                    stop_lat as lat,
-                                    stop_lon as lon,
+                                    min(departure_time),
+                                    max(departure_time),
+                                    min(stop_lat) as lat,
+                                    min(stop_lon) as lon,
                                     route_short_name
                             from time_to_hbf
-                            group by stop_id, stop_name, lat, lon, route_short_name
+                            group by stop_name, route_short_name
                             order by stop_name)
 select *
 from routes_with_duration
-order by stop_name, minutes_to_hbf""").fetchall()
+order by stop_name, minutes_to_hbf;""").fetchall()
 
     last_stop_name = ''
     current_stop = {}
@@ -57,8 +59,15 @@ order by stop_name, minutes_to_hbf""").fetchall()
             stops_with_routes.append(current_stop)
             current_fastest = 99
             last_stop_name = stop[1]
-            current_stop = {'stop_name': stop[1], 'stop_lat': stop[3], 'stop_lon': stop[4], 'routes': []}
-        route = {'stop_name': stop[1], 'minutes_to_hbf': stop[2], 'route_short_name': stop[5]}
+            current_stop = {'stop_name': stop[0],
+                            'stop_lat': stop[4],
+                            'stop_lon': stop[5],
+                            'routes': []}
+        route = {'stop_name': stop[1],
+                 'minutes_to_hbf': stop[1],
+                 'first_trip': stop[2],
+                 'last_trip': stop[3],
+                 'route_short_name': stop[6]}
         if current_fastest > route['minutes_to_hbf']:
             current_fastest = route['minutes_to_hbf']
         current_stop['routes'].append(route)
