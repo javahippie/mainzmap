@@ -1,12 +1,20 @@
 var map = L.map('map').setView([49.98026047702005, 8.252620697021486], 13);
 var markers = L.layerGroup().addTo(map);
 
-L.tileLayer(' \thttps://tile.memomaps.de/tilegen/{z}/{x}/{y}.png', {
+L.tileLayer('https://tile.memomaps.de/tilegen/{z}/{x}/{y}.png', {
     maxZoom: 19, attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
 }).addTo(map);
 
-function loadAllStops() {
-    fetch(`/stops`)
+function loadAllStops(timeOfDay) {
+    if(timeOfDay === 'day') {
+        document.getElementById('timeOfDayHeadline').innerText = '06:00 - 21:00'
+    } else if (timeOfDay === 'night') {
+        document.getElementById('timeOfDayHeadline').innerText = '21:00 - 06:00'
+    } else {
+        document.getElementById('timeOfDayHeadline').innerText = 'Alle Tageszeiten'
+    }
+
+    fetch(`/stops?timeOfDay=${timeOfDay}`)
         .then((response) => {
             return response.json()
         })
@@ -18,8 +26,7 @@ function loadAllStops() {
 
 function refreshMap(stop) {
 
-    L.polygon([[49.8311, 7.94887], [49.8311, 8.4226], [50.0547, 8.4226], [50.0547, 7.94887]], {opacity: 0.5, fill: false}).addTo(map);
-    if(stop.stop_name === undefined)
+   if(stop.stop_name === undefined)
         return
 
     const lat = stop.stop_lat;
@@ -45,6 +52,13 @@ function refreshMap(stop) {
                 `<th>Dauer zum Ziel</th>` +
                 `<th>Erste Fahrt</th>` +
                 `<th>Letzte Fahrt</th>` +
+                `<th>Mo</th>` +
+                `<th>Di</th>` +
+                `<th>Mi</th>` +
+                `<th>Do</th>` +
+                `<th>Fr</th>` +
+                `<th>Sa</th>` +
+                `<th>So</th>` +
               `</tr>` +
                stop.routes.map(stopToLi).join(' ') +
             `</table>` +
@@ -52,15 +66,39 @@ function refreshMap(stop) {
     );
 }
 
-function stopToLi({minutes_to_hbf, route_short_name, first_trip, last_trip}) {
+function stopToLi({minutes_to_hbf,
+                   route_short_name,
+                   first_trip,
+                   last_trip,
+                   monday,
+                   tuesday,
+                   wednesday,
+                   thursday,
+                   friday,
+                   saturday,
+                   sunday}) {
     return `<tr>` +
              `<td>${route_short_name}</td>` +
              `<td style="color:${calculateSpeedColor(minutes_to_hbf)}">${minutes_to_hbf} Minuten</td>` +
              `<td>${seconds_to_format(first_trip)}</td>` +
              `<td>${seconds_to_format(last_trip)}</td>` +
+             `<td>${intToCheck(monday)}</td>` +
+             `<td>${intToCheck(tuesday)}</td>` +
+             `<td>${intToCheck(wednesday)}</td>` +
+             `<td>${intToCheck(thursday)}</td>` +
+             `<td>${intToCheck(friday)}</td>` +
+             `<td>${intToCheck(saturday)}</td>` +
+             `<td>${intToCheck(sunday)}</td>` +
            `</tr>`
 }
 
+function intToCheck(i) {
+    if(i === 1) {
+        return '✅';
+    } else {
+        return '';
+    }
+}
 
 function calculateSpeedColor(minutes_to_hbf){
     const positiveValue = Math.min(Math.floor(minutes_to_hbf * minutes_to_hbf / 2) , 255);

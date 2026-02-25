@@ -14,3 +14,9 @@ create table trips AS
 create table routes AS
     from read_csv('db/routes.txt') as routes
     WHERE routes.route_id in (SELECT route_id from trips);
+
+create table calendar AS
+    from read_csv('app/db/calendar.txt') as calendar
+    WHERE calendar.service_id IN (select service_id from trips);
+
+select * from calendar;

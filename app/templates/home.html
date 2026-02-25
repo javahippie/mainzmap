@@ -10,12 +10,16 @@
 <body>
 <div>
     <h1>Dauer von Direktverbindungen bis zum Hauptbahnhof</h1>
+    <h2 id="timeOfDayHeadline">Alle Tageszeiten</h2>
+    <button onclick="loadAllStops('all')">Alle</button>
+    <button onclick="loadAllStops('day')">Tags</button>
+    <button onclick="loadAllStops('night')">Nachts</button>
     <div id="map"></div>
 </div>
 </body>
 <script src="/static/leaflet.js"></script>
 <script src="/static/main.js"></script>
 <script>
-    loadAllStops()
+    loadAllStops('alle')
 </script>
 </html>
